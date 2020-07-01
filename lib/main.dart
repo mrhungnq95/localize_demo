@@ -26,6 +26,8 @@ class AppProvider extends ChangeNotifier {
 
   Locale get locale => _locale;
 
+  set locale(value) => _locale = _locale;
+
   void setupLocale(Locale locale) {
     this._locale = locale;
     notifyListeners();
@@ -167,7 +169,7 @@ class ContentMainPage extends StatelessWidget {
                   Navigator.push(
                       context, MaterialPageRoute(builder: (_) => SecondPage()));
                 },
-                child: Text("Next"),
+                child: Text(AppLocalization.of(context).localize("continue")),
               )
             ],
           ),
