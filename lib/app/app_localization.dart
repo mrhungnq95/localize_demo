@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -44,6 +45,14 @@ class AppLocalization {
   }
 }
 
+ Map<String, Map<String, String>> parseLocalizeData(String contentJson) {
+    Map<String, dynamic> contentMapJson = jsonDecode(contentJson);
+    var localizeData = contentMapJson
+        .map((key, value) => MapEntry(key, Map<String, String>.from(value)));
+
+    return localizeData;
+  }
+
 class _AppLocalizationDelegates extends LocalizationsDelegate<AppLocalization> {
   const _AppLocalizationDelegates();
 
@@ -58,11 +67,7 @@ class _AppLocalizationDelegates extends LocalizationsDelegate<AppLocalization> {
       String languageCode) async {
     String contentJson = await rootBundle.loadString("lang/$languageCode.json");
 
-    Map<String, dynamic> contentMapJson = jsonDecode(contentJson);
-    var localizeData = contentMapJson
-        .map((key, value) => MapEntry(key, Map<String, String>.from(value)));
-
-    return localizeData;
+    return compute(parseLocalizeData, contentJson);
   }
 
   @override
