@@ -4,6 +4,8 @@ import 'package:localize_demo/app/app_localization.dart';
 import 'package:localize_demo/app/second_page.dart';
 import 'package:provider/provider.dart';
 
+import 'ms_bottom_navigation_widget.dart';
+
 void main() {
   runApp(ChangeNotifierProvider(
       create: (context) => AppProvider(),
@@ -23,6 +25,12 @@ class MyApp extends StatelessWidget {
 
 class AppProvider extends ChangeNotifier {
   Locale _locale = Locale("vi", "VN");
+  int _currentPageIndex = 0;
+  int get currentPageIndex => _currentPageIndex;
+  set currentPageIndex(value) {
+    _currentPageIndex = value;
+    notifyListeners();
+  }
 
   Locale get locale => _locale;
 
@@ -119,61 +127,157 @@ class ContentMainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
-          title: Text(title),
-          actions: <Widget>[
-            PopupMenuButton<Locale>(
-              icon: Icon(Icons.language),
-              onSelected: (Locale result) {
-                Provider.of<AppProvider>(context, listen: false)
-                    .setupLocale(result);
+      appBar: AppBar(
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: Text(title),
+        actions: <Widget>[
+          PopupMenuButton<Locale>(
+            icon: Icon(Icons.language),
+            onSelected: (Locale result) {
+              Provider.of<AppProvider>(context, listen: false)
+                  .setupLocale(result);
+            },
+            itemBuilder: (BuildContext context) =>
+                AppLocalization.supportedLocales
+                    .map((e) => PopupMenuItem<Locale>(
+                          value: e,
+                          child: Text(e.toLanguageTag()),
+                        ))
+                    .toList(),
+          )
+        ],
+      ),
+      body: Center(
+        // Center is a layout widget. It takes a single child and positions it
+        // in the middle of the parent.
+        child: Column(
+          // Column is also a layout widget. It takes a list of children and
+          // arranges them vertically. By default, it sizes itself to fit its
+          // children horizontally, and tries to be as tall as its parent.
+          //
+          // Invoke "debug painting" (press "p" in the console, choose the
+          // "Toggle Debug Paint" action from the Flutter Inspector in Android
+          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
+          // to see the wireframe for each widget.
+          //
+          // Column has various properties to control how it sizes itself and
+          // how it positions its children. Here we use mainAxisAlignment to
+          // center the children vertically; the main axis here is the vertical
+          // axis because Columns are vertical (the cross axis would be
+          // horizontal).
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              AppLocalization.of(context).localize("title"),
+              style: TextStyle(fontSize: 30),
+            ),
+            RaisedButton(
+              onPressed: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (_) => SecondPage()));
               },
-              itemBuilder: (BuildContext context) =>
-                  AppLocalization.supportedLocales
-                      .map((e) => PopupMenuItem<Locale>(
-                            value: e,
-                            child: Text(e.toLanguageTag()),
-                          ))
-                      .toList(),
+              child: Text(AppLocalization.of(context).localize("continue")),
             )
           ],
         ),
-        body: Center(
-          // Center is a layout widget. It takes a single child and positions it
-          // in the middle of the parent.
-          child: Column(
-            // Column is also a layout widget. It takes a list of children and
-            // arranges them vertically. By default, it sizes itself to fit its
-            // children horizontally, and tries to be as tall as its parent.
-            //
-            // Invoke "debug painting" (press "p" in the console, choose the
-            // "Toggle Debug Paint" action from the Flutter Inspector in Android
-            // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-            // to see the wireframe for each widget.
-            //
-            // Column has various properties to control how it sizes itself and
-            // how it positions its children. Here we use mainAxisAlignment to
-            // center the children vertically; the main axis here is the vertical
-            // axis because Columns are vertical (the cross axis would be
-            // horizontal).
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                AppLocalization.of(context).localize("title"),
-                style: TextStyle(fontSize: 30),
-              ),
-              RaisedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (_) => SecondPage()));
-                },
-                child: Text(AppLocalization.of(context).localize("continue")),
-              )
-            ],
+      ) // This trailing comma makes auto-formatting nicer for build methods.
+      ,
+      floatingActionButton: Container(
+        width: 56.0,
+        height: 56.0,
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+                color: Color(0x8C5663FF), blurRadius: 25, offset: Offset(0, 10))
+          ],
+          shape: BoxShape.circle,
+        ),
+        child: FloatingActionButton(
+          backgroundColor: Color(0xFF5663FF),
+          splashColor: Color(0xFF5663FF),
+          onPressed: () => print("object"),
+          elevation: 0,
+          highlightElevation: 0,
+          hoverElevation: 0,
+          child: Icon(
+            Icons.add,
+            color: Colors.white,
           ),
-        ) // This trailing comma makes auto-formatting nicer for build methods.
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: MSBottomNavigationWidget(),
+    );
+  }
+
+  Widget _bottomNavigationBar(BuildContext context) {
+    return Consumer<AppProvider>(
+      builder: (context, model, child) {
+        return BottomNavigationBar(
+          items: [
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.check,
+                  color: model.currentPageIndex == 0
+                      ? Colors.green
+                      : Colors.black54,
+                ),
+                title: Visibility(
+                  child: Text("Cửa hàng"),
+                  visible: false,
+                )),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.check,
+                  color: model.currentPageIndex == 1
+                      ? Colors.green
+                      : Colors.black54,
+                ),
+                title: Visibility(
+                  child: Text("Cửa hàng"),
+                  visible: false,
+                )),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.check,
+                  color: model.currentPageIndex == 2
+                      ? Colors.green
+                      : Colors.black54,
+                ),
+                title: Visibility(
+                  child: Text("Cửa hàng"),
+                  visible: false,
+                )),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.check,
+                  color: model.currentPageIndex == 3
+                      ? Colors.green
+                      : Colors.black54,
+                ),
+                title: Visibility(
+                  child: Text("Cửa hàng"),
+                  visible: false,
+                )),
+          ],
+          type: BottomNavigationBarType.fixed,
+          currentIndex: model.currentPageIndex,
+          showSelectedLabels: true,
+          onTap: (value) {
+            model.currentPageIndex = value;
+          },
+          showUnselectedLabels: true,
+          backgroundColor: Colors.white,
+          iconSize: 35,
+          selectedItemColor: Colors.green,
+          unselectedItemColor: Colors.black54,
+          selectedLabelStyle:
+              Theme.of(context).textTheme.display1.copyWith(fontSize: 11),
+          unselectedLabelStyle:
+              Theme.of(context).textTheme.display1.copyWith(fontSize: 11),
         );
+      },
+    );
   }
 }
