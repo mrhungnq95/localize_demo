@@ -1,0 +1,32 @@
+{
+    "code": 200,
+    "data": [
+        {
+            "inventoryItemList": [
+                {
+                    "inventoryItemName": "Món A"
+                },
+                {
+                    "inventoryItemName": "Món B"
+                },
+                {
+                    "inventoryItemName": "Món C"
+                }
+            ],
+            "customerList": [
+                {
+                    "name": "KH A",
+                    "age": 20
+                },
+                {
+                    "name": "KH B",
+                    "age": 20
+                },
+                {
+                    "name": "KH C",
+                    "age": 20
+                }
+            ]
+        }
+    ]
+}

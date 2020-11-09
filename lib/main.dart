@@ -1,9 +1,16 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localize_demo/app/app_localization.dart';
 import 'package:localize_demo/app/second_page.dart';
+import 'package:localize_demo/model/base_output.dart';
+import 'package:localize_demo/model/revenue_data.dart';
 import 'package:provider/provider.dart';
 
+import 'model/inventory_item.dart';
 import 'ms_bottom_navigation_widget.dart';
 
 void main() {
@@ -40,6 +47,44 @@ class AppProvider extends ChangeNotifier {
     this._locale = locale;
     notifyListeners();
   }
+
+  Future<Map<String, Map<String, String>>> loadData() async {
+    String contentJson = await rootBundle.loadString("assets/raw/data.json");
+
+    return compute(parseData, contentJson);
+  }
+
+  Future<Map<String, Map<String, String>>> loadData2() async {
+    String contentJson = await rootBundle.loadString("assets/raw/data2.json");
+    return compute(parseData2, contentJson);
+  }
+}
+
+Map<String, Map<String, String>> parseData(String contentJson) {
+  //print(contentJson);
+  Map<String, dynamic> json = jsonDecode(contentJson);
+
+  print("Map<String, dynamic>: $json");
+
+  var data = BaseOutput<RevenueData>.fromJson(json, (v) {
+    print("RevenueData: $v");
+    return RevenueData.fromJson(v);
+  });
+
+  print(data);
+
+  print(data.data[0].inventoryItemList[1].inventoryItemName);
+  print(data.data[0].customerList[1].name);
+  return null;
+}
+
+Map<String, Map<String, String>> parseData2(String contentJson) {
+  Map<String, dynamic> json = jsonDecode(contentJson);
+  var data = BaseOutput<InventoryItem>.fromJson(json, (v) {
+    return InventoryItem.fromJson(v);
+  });
+  print(data);
+  return null;
 }
 
 class MyHomePage extends StatefulWidget {
@@ -174,8 +219,9 @@ class ContentMainPage extends StatelessWidget {
             ),
             RaisedButton(
               onPressed: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => SecondPage()));
+                Provider.of<AppProvider>(context, listen: false).loadData2();
+                //Navigator.push(
+                //    context, MaterialPageRoute(builder: (_) => SecondPage()));
               },
               child: Text(AppLocalization.of(context).localize("continue")),
             )

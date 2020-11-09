@@ -13,6 +13,12 @@ class MSBottomNavigationWidget extends StatelessWidget {
     return Container(
         decoration: BoxDecoration(
             color: Color(0xFFFFFFFF),
+            boxShadow: [
+              BoxShadow(
+                  blurRadius: 6,
+                  color: Colors.black.withOpacity(0.16),
+                  offset: Offset(0, -3))
+            ],
             border: Border.all(color: Color(0xFFF3F3F3), width: 1),
             borderRadius: BorderRadius.only(
                 topRight: Radius.circular(22), topLeft: Radius.circular(22))),
